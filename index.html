@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AFIAS｜展場互動式產品介紹</title>
+
+<!-- CSS -->
+<style>
+  :root{
+    --bg0:#061b25;
+    --bg1:#073348;
+    --ink:#0e1720;
+    --paper:#ffffff;
+    --muted:#637487;
+
+    /* A4 視覺主色：藍綠＋黃橘六角 */
+    --brand:#0a6b88;
+    --brand2:#0e4f6b;
+    --accent:#f5c33b;
+    --accent2:#f39a1e;
+
+    --line:rgba(255,255,255,.16);
+    --shadow:0 16px 50px rgba(0,0,0,.20);
+    --shadow2:0 10px 22px rgba(0,0,0,.18);
+
+    --r12:12px;
+    --r16:16px;
+    --r22:22px;
+
+    --max:1120px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans TC", "PingFang TC", sans-serif;
+    color:var(--ink);
+    background: linear-gradient(180deg, #071d28 0%, #082535 30%, #0a2d42 100%);
+  }
+
+  .skip{
+    position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;
+  }
+  .skip:focus{left:16px; top:16px; width:auto; height:auto; padding:10px 12px; background:#fff; border-radius:10px; z-index:9999}
+
+  .container{width:min(var(--max), calc(100% - 40px)); margin:0 auto;}
+
+  /* Topbar */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background: rgba(6, 27, 37, .78);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,.10);
+  }
+  .topbar__inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0;
+    gap:16px;
+  }
+
+  .brand{display:flex; align-items:center; gap:12px; color:#fff}
+  .brand__mark{
+    width:40px; height:40px; border-radius:14px;
+    display:grid; place-items:center;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color:#14212a; font-weight:900; letter-spacing:.5px;
+    box-shadow: var(--shadow2);
+  }
+  .brand__title{font-weight:900; letter-spacing:.6px; font-size:16px}
+  .brand__tag{opacity:.85; font-size:12px}
+
+  .nav{display:flex; align-items:center; gap:10px}
+  .nav__toggle{
+    display:none;
+    border:1px solid rgba(255,255,255,.20);
+    background: rgba(255,255,255,.08);
+    color:#fff;
+    padding:10px 12px;
+    border-radius: 12px;
+    cursor:pointer;
+  }
+  .nav__menu{display:flex; gap:10px}
+  .nav__item{
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.06);
+    color:#fff;
+    padding:10px 12px;
+    border-radius: 999px;
+    cursor:pointer;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  .nav__item:hover{background: rgba(255,255,255,.10)}
+  .nav__item.is-active{
+    background: linear-gradient(135deg, rgba(245,195,59,.95), rgba(243,154,30,.95));
+    color:#14212a;
+    border-color: rgba(0,0,0,.0);
+  }
+
+  /* Hero */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    border-bottom: 1px solid rgba(255,255,255,.10);
+  }
+  .hero__bg{position:absolute; inset:0; z-index:0}
+  .hero__bgimg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    filter:saturate(1.1) contrast(1.05);
+    transform: scale(1.02);
+  }
+  .hero__overlay{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(1200px 600px at 22% 20%, rgba(10,107,136,.55), rgba(6,27,37,.85) 55%, rgba(6,27,37,.96) 100%),
+      linear-gradient(180deg, rgba(6,27,37,.20), rgba(6,27,37,.80));
+  }
+  .hero__content{
+    position:relative; z-index:1;
+    padding: 34px 0 26px;
+    display:grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 24px;
+    align-items:stretch;
+  }
+
+  .hero__eyebrow{color:rgba(255,255,255,.85); font-weight:800; letter-spacing:.6px; font-size:12px}
+  .hero__title{
+    margin:10px 0 8px;
+    color:#fff;
+    font-weight:1000;
+    letter-spacing:.5px;
+    font-size: clamp(34px, 4.2vw, 56px);
+    line-height:1.05;
+    text-shadow: 0 12px 30px rgba(0,0,0,.25);
+  }
+  .hero__desc{
+    margin:0;
+    color:rgba(255,255,255,.88);
+    font-size: 16px;
+    line-height:1.7;
+    max-width: 52ch;
+  }
+
+  .hero__cta{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap}
+
+  .btn{
+    border:1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.08);
+    color:#fff;
+    padding:12px 14px;
+    border-radius: 14px;
+    cursor:pointer;
+    font-weight:800;
+    letter-spacing:.2px;
+    transition: transform .10s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active{transform: translateY(1px)}
+  .btn--primary{
+    background: linear-gradient(135deg, rgba(245,195,59,.98), rgba(243,154,30,.98));
+    color:#14212a;
+    border-color: rgba(0,0,0,.0);
+    box-shadow: var(--shadow2);
+  }
+  .btn--ghost:hover{background: rgba(255,255,255,.12)}
+  .btn--small{padding:10px 12px; border-radius: 12px; font-size:13px}
+
+  .hero__badges{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .badge{
+    background: rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius: var(--r16);
+    padding: 12px;
+  }
+  .badge__kicker{color:rgba(255,255,255,.86); font-size:12px; font-weight:900}
+  .badge__text{color:#fff; font-weight:900; margin-top:6px; font-size:14px}
+
+  /* Right side visuals */
+  .hero__right{
+    position:relative;
+    border-radius: var(--r22);
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    overflow:hidden;
+  }
+
+  .hexgrid{
+    position:absolute; inset:-30px -30px auto auto;
+    width:340px; height:260px;
+    opacity:.45;
+    pointer-events:none;
+  }
+  .hex{
+    position:absolute;
+    width:120px; height:104px;
+    clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+    border: 2px solid rgba(255,255,255,.18);
+    background: linear-gradient(135deg, rgba(10,107,136,.45), rgba(245,195,59,.26));
+  }
+  .hex--a{right:20px; top:10px}
+  .hex--b{right:90px; top:78px; background: linear-gradient(135deg, rgba(245,195,59,.45), rgba(243,154,30,.25))}
+  .hex--c{right:10px; top:126px}
+  .hex--d{right:160px; top:18px}
+  .hex--e{right:160px; top:146px}
+
+  .models{
+    position:relative;
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .modelcard{
+    text-align:left;
+    padding: 14px;
+    border-radius: var(--r16);
+    border:1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.08);
+    color:#fff;
+    cursor:pointer;
+  }
+  .modelcard:hover{background: rgba(255,255,255,.12)}
+  .modelcard__name{font-weight:1000; letter-spacing:.4px}
+  .modelcard__dim{opacity:.85; margin-top:6px; font-weight:700; font-size:12px}
+  .modelcard__hint{margin-top:10px; font-size:12px; color: rgba(245,195,59,.95); font-weight:900}
+
+  /* Alert */
+  .alert{
+    margin: 14px 0 0;
+    display:flex; align-items:center; gap:12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(245,195,59,.14);
+    border: 1px solid rgba(245,195,59,.40);
+    color:#fff;
+  }
+  .alert.is-hidden{display:none}
+  .alert__icon{
+    width:28px; height:28px; border-radius:10px;
+    display:grid; place-items:center;
+    background: rgba(245,195,59,.85);
+    color:#14212a;
+    font-weight:1000;
+  }
+  .alert__text{font-weight:800}
+  .alert__close{
+    margin-left:auto;
+    border:0;
+    background: transparent;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+    opacity:.9;
+  }
+  .alert__close:hover{opacity:1}
+
+  /* Tabs / Sections */
+  .tabs{padding: 22px 0 44px}
+  .tab{display:none}
+  .tab.is-active{display:block}
+
+  .sectionhead{margin: 14px 0 14px}
+  .sectionhead__title{
+    margin:0;
+    color:#fff;
+    font-weight:1000;
+    letter-spacing:.4px;
+    font-size: 24px;
+  }
+  .sectionhead__desc{
+    margin:10px 0 0;
+    color:rgba(255,255,255,.86);
+    line-height:1.7;
+    max-width: 74ch;
+  }
+
+  .featuregrid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .feature{
+    border-radius: var(--r22);
+    background: rgba(255,255,255,.92);
+    border:1px solid rgba(255,255,255,.28);
+    box-shadow: var(--shadow2);
+    padding: 16px;
+    position:relative;
+    overflow:hidden;
+  }
+  .feature:before{
+    content:"";
+    position:absolute; inset:-60px -60px auto auto;
+    width:200px; height:170px;
+    clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+    background: linear-gradient(135deg, rgba(10,107,136,.18), rgba(245,195,59,.22));
+    transform: rotate(8deg);
+  }
+  .feature__icon{font-size:26px; position:relative}
+  .feature__title{margin:10px 0 10px; font-weight:1000}
+  .feature__list{margin:0; padding-left: 18px; color:#22313f; line-height:1.7; font-weight:650}
+  .feature__btn{margin-top:12px}
+
+  .contactcard{
+    margin-top: 16px;
+    border-radius: var(--r22);
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    display:flex;
+    justify-content:space-between;
+    gap: 16px;
+    align-items:center;
+  }
+  .contactcard__title{margin:0; color:#fff; font-weight:1000}
+  .contactcard__desc{margin:8px 0 0; color:rgba(255,255,255,.85); line-height:1.6}
+  .pill{
+    border:1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.08);
+    color:#fff;
+    padding: 10px 12px;
+    border-radius: 999px;
+    cursor:pointer;
+    font-weight:900;
+    margin: 6px 6px 0 0;
+  }
+  .pill:hover{background: rgba(255,255,255,.12)}
+
+  /* Toolbar */
+  .toolbar{
+    border-radius: var(--r22);
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    margin-top: 12px;
+  }
+  .toolbar__row{display:flex; gap:12px; align-items:end; flex-wrap:wrap}
+  .field{display:flex; flex-direction:column; gap:6px}
+  .field__label{color:rgba(255,255,255,.86); font-weight:900; font-size:12px}
+  .field__input{
+    width: 280px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border:1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.10);
+    color:#fff;
+    outline:none;
+    font-weight:800;
+  }
+  .field__input::placeholder{color:rgba(255,255,255,.60)}
+  .check{display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.86); font-weight:900}
+  .toolbar__meta{margin-top:10px; color:rgba(255,255,255,.82); font-weight:800}
+
+  /* Table */
+  .tablewrap{
+    margin-top: 12px;
+    border-radius: var(--r22);
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.92);
+    box-shadow: var(--shadow);
+  }
+  .table{width:100%; border-collapse:collapse}
+  .table thead th{
+    text-align:left;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(10,107,136,.90), rgba(14,79,107,.90));
+    color:#fff;
+    font-weight:1000;
+    letter-spacing:.2px;
+    font-size:13px;
+  }
+  .table tbody td{
+    padding: 12px;
+    border-top: 1px solid rgba(0,0,0,.06);
+    vertical-align:top;
+    font-weight:750;
+    color:#1c2b38;
+  }
+  .chip{
+    display:inline-flex; align-items:center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size:12px;
+    font-weight:1000;
+    background: rgba(245,195,59,.30);
+    color:#5b3b07;
+    border:1px solid rgba(245,195,59,.55);
+  }
+  .muted{opacity:.7; font-weight:800}
+
+  .footnotes{
+    margin-top: 10px;
+    color: rgba(255,255,255,.78);
+    line-height:1.6;
+    font-weight:800;
+    font-size:12px;
+  }
+
+  /* Cards */
+  .cards{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .card{
+    border-radius: var(--r22);
+    background: rgba(255,255,255,.92);
+    border:1px solid rgba(255,255,255,.28);
+    box-shadow: var(--shadow2);
+    padding: 16px;
+  }
+  .card__title{margin:0; font-weight:1000}
+  .card__desc{margin:10px 0 12px; color:#22313f; line-height:1.7; font-weight:700}
+
+  .callout{
+    margin-top: 14px;
+    border-radius: var(--r22);
+    border:1px solid rgba(245,195,59,.35);
+    background: rgba(245,195,59,.10);
+    padding: 14px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    color:#fff;
+  }
+  .callout__badge{
+    flex:0 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight:1000;
+    color:#14212a;
+    background: rgba(245,195,59,.92);
+  }
+  .callout__text{font-weight:850; line-height:1.7; opacity:.92}
+
+  /* Modal */
+  .modal{position:fixed; inset:0; z-index:100; display:grid; place-items:center}
+  .modal.is-hidden{display:none}
+  .modal__backdrop{position:absolute; inset:0; background: rgba(0,0,0,.55)}
+  .modal__panel{
+    position:relative;
+    width: min(860px, calc(100% - 24px));
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .modal__head{
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(10,107,136,.95), rgba(14,79,107,.95));
+    color:#fff;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .modal__title{margin:0; font-weight:1000}
+  .modal__close{
+    border:0; background: rgba(255,255,255,.14);
+    color:#fff; cursor:pointer;
+    width:36px; height:36px; border-radius: 12px;
+    display:grid; place-items:center;
+  }
+  .modal__close:hover{background: rgba(255,255,255,.18)}
+  .modal__body{padding: 16px; color:#182531; line-height:1.75; font-weight:700}
+  .modal__foot{padding: 14px 16px; border-top: 1px solid rgba(0,0,0,.08); display:flex; justify-content:flex-end}
+
+  .poster{
+    width:100%;
+    border-radius: 16px;
+    border:1px solid rgba(0,0,0,.10);
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.14);
+  }
+  .poster img{width:100%; height:auto; display:block}
+
+  /* Toast */
+  .toast{
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    background: rgba(20,33,42,.92);
+    color:#fff;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow: var(--shadow2);
+    opacity:0;
+    transform: translateY(8px);
+    transition: opacity .18s ease, transform .18s ease;
+    z-index: 120;
+    max-width: min(420px, calc(100% - 28px));
+    font-weight:900;
+  }
+  .toast.is-on{opacity:1; transform: translateY(0)}
+
+  /* Responsive */
+  @media (max-width: 980px){
+    .hero__content{grid-template-columns: 1fr}
+    .hero__badges{grid-template-columns: 1fr}
+    .featuregrid{grid-template-columns: 1fr}
+    .cards{grid-template-columns: 1fr}
+    .models{grid-template-columns: 1fr 1fr}
+  }
+
+  @media (max-width: 720px){
+    .nav__toggle{display:inline-flex}
+    .nav__menu{
+      display:none;
+      position:absolute;
+      right: 20px;
+      top: 56px;
+      background: rgba(6,27,37,.96);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      padding: 10px;
+      flex-direction:column;
+      gap:10px;
+      box-shadow: var(--shadow);
+    }
+    .nav__menu.is-open{display:flex}
+    .field__input{width: 100%}
+    .models{grid-template-columns: 1fr}
+  }
+/* Model thumbnail */
+.modelcard__img{
+  width:100%;
+  height:110px;
+  object-fit:contain;
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 10px;
+}
+/* Logos */
+.brand__logos{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left: 10px;
+}
+.brand__logo{
+  height: 28px;
+  width: auto;
+  display:block;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,.18));
+}
+
+@media (max-width: 720px){
+  .brand{ gap: 10px; }
+  .brand__logos{ gap: 8px; margin-left: 6px; }
+  .brand__logo{ height: 22px; }
+}
+
+/* ===== RWD polish for tablet & mobile ===== */
+
+/* Safe area (iPhone notch) */
+body{
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Better tap targets */
+.btn, .nav__item, .pill, .modelcard, .nav__toggle{
+  min-height: 44px;
+}
+
+/* Prevent long words from breaking layout */
+.sectionhead__title, .hero__title, .card__title{
+  word-break: break-word;
+}
+
+/* Table: allow horizontal scroll on small screens */
+.tablewrap{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table{
+  min-width: 720px; /* 讓手機可橫滑，不會擠爛欄位 */
+}
+
+/* Make inputs full width on mobile */
+@media (max-width: 720px){
+  .container{ width: min(var(--max), calc(100% - 28px)); }
+  .topbar__inner{ gap: 10px; }
+  .hero__content{ padding: 22px 0 18px; }
+  .hero__desc{ font-size: 15px; }
+  .hero__cta{ gap: 10px; }
+  .btn{ width: 100%; justify-content:center; }
+  .models{ grid-template-columns: 1fr; }
+  .modelcard{ padding: 12px; }
+  .contactcard{ flex-direction:column; align-items:stretch; }
+  .contactcard__right{ display:flex; flex-wrap:wrap; }
+}
+
+</style>
+
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">AF</div>
+          <div class="brand__text">
+            <div class="brand__title">AFIAS</div>
+            <div class="brand__tag">Simple , Fast , Accurate</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="主選單">
+          <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+            選單
+          </button>
+          <div class="nav__menu" id="navMenu">
+            <button class="nav__item is-active" data-tab="overview">產品總覽</button>
+            <button class="nav__item" data-tab="menu">Test Menu</button>
+            <button class="nav__item" data-tab="tdm">TDM 臨床應用</button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section class="hero" aria-label="AFIAS 產品主視覺">
+        <div class="hero__bg" aria-hidden="true">
+          <!-- 放在同資料夾：afias_a4_cn.png（或你想換的展場主圖） -->
+          <img class="hero__bgimg" src="afias_a4_cn.png" alt="" loading="lazy" />
+          <div class="hero__overlay"></div>
+        </div>
+
+        <div class="container hero__content">
+          <div class="hero__left">
+            <div class="hero__eyebrow">Boditech｜BIO TECHNOLOGY</div>
+            <h1 class="hero__title">複雜檢測<br />輕鬆搞定</h1>
+            <p class="hero__desc">
+              一機多檢，5~15分鐘快速完成報告；支援全血、指尖血與靜脈血檢測，滿足不同臨床場景。
+            </p>
+
+            <div class="hero__cta">
+              <button class="btn btn--primary" id="btnQuickMenu">快速查 Test Menu</button>
+              <button class="btn btn--ghost" id="btnOpenPoster">看 A4 主視覺</button>
+            </div>
+
+            <div class="hero__badges" aria-label="產品亮點摘要">
+              <div class="badge">
+                <div class="badge__kicker">完整的檢驗項目</div>
+                <div class="badge__text">多元檢驗一次到位</div>
+              </div>
+              <div class="badge">
+                <div class="badge__kicker">高品質檢驗報告</div>
+                <div class="badge__text">高靈敏螢光分析技術</div>
+              </div>
+              <div class="badge">
+                <div class="badge__kicker">簡易且便利的操作</div>
+                <div class="badge__text">All-in-One + C-tip™</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__right" aria-label="機型展示">
+            <div class="hexgrid" aria-hidden="true">
+              <div class="hex hex--a"></div>
+              <div class="hex hex--b"></div>
+              <div class="hex hex--c"></div>
+              <div class="hex hex--d"></div>
+              <div class="hex hex--e"></div>
+            </div>
+
+            <div class="models" role="list">
+<button class="modelcard" role="listitem" data-model="AFIAS 1" data-dim="180.6 × 320.6 × 206.4 (mm)">
+  <img class="modelcard__img" src="afias1.png" alt="AFIAS 1 儀器外觀" loading="lazy" />
+  <div class="modelcard__name">AFIAS 1</div>
+  <div class="modelcard__dim">180.6 × 320.6 × 206.4 (mm)</div>
+  <div class="modelcard__hint">點擊看重點</div>
+</button>
+
+
+              <button class="modelcard" role="listitem" data-model="AFIAS 3" data-dim="276 × 365 × 313 (mm)">
+  <img class="modelcard__img" src="afias3.png" alt="AFIAS 3 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 3</div>
+                <div class="modelcard__dim">276 × 365 × 313 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+
+              <button class="modelcard" role="listitem" data-model="AFIAS 6" data-dim="420 × 336 × 293 (mm)">
+  <img class="modelcard__img" src="afias6.png" alt="AFIAS 6 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 6</div>
+                <div class="modelcard__dim">420 × 336 × 293 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+
+              <button class="modelcard" role="listitem" data-model="AFIAS 10" data-dim="426 × 443 × 395 (mm)">
+  <img class="modelcard__img" src="afias10.png" alt="AFIAS 10 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 10</div>
+                <div class="modelcard__dim">426 × 443 × 395 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ERROR BAR -->
+      <section class="container">
+        <div class="alert is-hidden" id="alertBar" role="status" aria-live="polite">
+          <div class="alert__icon" aria-hidden="true">!</div>
+          <div class="alert__text" id="alertText">提示訊息</div>
+          <button class="alert__close" id="alertClose" aria-label="關閉提示">✕</button>
+        </div>
+      </section>
+
+      <!-- TABS -->
+      <section class="container tabs">
+        <!-- OVERVIEW -->
+        <section class="tab is-active" id="tab-overview" data-tabpanel="overview">
+          <div class="sectionhead">
+            <h2 class="sectionhead__title">產品特色</h2>
+            <p class="sectionhead__desc">
+              內容已依 AFIAS A4 中文單面文案帶入：三大主軸（完整的檢驗項目／高品質檢驗報告／簡易且便利的操作）。
+            </p>
+          </div>
+
+          <div class="featuregrid">
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">📋</div>
+              <h3 class="feature__title">完整的檢驗項目</h3>
+              <ul class="feature__list">
+                <li>一機多檢，5~15分鐘快速完成報告</li>
+                <li>支援全血、指尖血與靜脈血檢測，滿足不同臨床場景</li>
+              </ul>
+              <button class="btn btn--small btn--ghost feature__btn" data-more="menu">看檢驗項目（Test Menu）</button>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">🏅</div>
+              <h3 class="feature__title">高品質檢驗報告</h3>
+              <ul class="feature__list">
+                <li>高靈敏螢光分析技術，提升報告品質</li>
+                <li>內建品管系統監控</li>
+                <li>5~15分鐘完成報告分析</li>
+              </ul>
+              <button class="btn btn--small btn--ghost feature__btn" data-more="qc">看更多：品管/流程</button>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">⚙️</div>
+              <h3 class="feature__title">簡易且便利的操作</h3>
+              <ul class="feature__list">
+                <li>All-in-One Cartridge，隨開即用試劑，穩定易保存</li>
+                <li>獨家 C-tip™ 技術，輕鬆採集指尖血</li>
+              </ul>
+              <button class="btn btn--small btn--ghost feature__btn" data-more="workflow">看 3-step 操作示意</button>
+            </article>
+          </div>
+
+          <div class="contactcard">
+            <div class="contactcard__left">
+              <h3 class="contactcard__title">展場快速聯繫</h3>
+              <p class="contactcard__desc">點一下即可複製電話，方便現場留下聯絡方式。</p>
+            </div>
+            <div class="contactcard__right">
+              <button class="pill" data-copy="02-2357-0091">台北｜02-2357-0091</button>
+              <button class="pill" data-copy="04-2275-7119">台中｜04-2275-7119</button>
+              <button class="pill" data-copy="07-581-0536">高雄｜07-581-0536</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEST MENU -->
+        <section class="tab" id="tab-menu" data-tabpanel="menu">
+          <div class="sectionhead">
+            <h2 class="sectionhead__title">AFIAS Test Menu（可搜尋/篩選）</h2>
+            <p class="sectionhead__desc">
+              依附件表單整理：包含產品項目、產品編號、檢體別與分析時間（含 C-tip 註記）。
+            </p>
+          </div>
+
+          <div class="toolbar" role="region" aria-label="Test Menu 工具列">
+            <div class="toolbar__row">
+              <label class="field">
+                <span class="field__label">搜尋</span>
+                <input id="q" class="field__input" placeholder="例如：PCT、NT-proBNP、Carba 5…" autocomplete="off" />
+              </label>
+
+              <label class="field">
+                <span class="field__label">分類</span>
+                <select id="cat" class="field__input">
+                  <option value="all">全部</option>
+                </select>
+              </label>
+
+              <label class="check">
+                <input type="checkbox" id="onlyCtip" />
+                <span>只看 C-tip（含 C）</span>
+              </label>
+
+              <button class="btn btn--primary" id="btnReset">重設</button>
+            </div>
+
+            <div class="toolbar__meta" id="resultMeta">載入中…</div>
+          </div>
+
+          <div class="tablewrap">
+            <table class="table" aria-label="AFIAS Test Menu 清單">
+              <thead>
+                <tr>
+                  <th>分類</th>
+                  <th>檢驗項目</th>
+                  <th>產品編號</th>
+                  <th>檢體別</th>
+                  <th>分析時間</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="footnotes">
+            <div class="footnotes__item">* W: Whole Blood, S: Serum, P: Plasma, C: C-tip</div>
+            <div class="footnotes__item">** 僅適用 AFIAS 1/6　　*** 僅適用 AFIAS 3/6/10</div>
+          </div>
+        </section>
+
+        <!-- TDM -->
+        <section class="tab" id="tab-tdm" data-tabpanel="tdm">
+          <div class="sectionhead">
+            <h2 class="sectionhead__title">TDM 臨床應用與相關產品</h2>
+            <p class="sectionhead__desc">
+              以「導讀卡」方式，讓你現場可快速切換：TDM 為什麼做、什麼時候做、AFIAS 的 TDM 檢測項目。
+            </p>
+          </div>
+
+          <div class="cards">
+            <article class="card">
+              <h3 class="card__title">為什麼要做 TDM？</h3>
+              <p class="card__desc">
+                以生物製劑治療為例，透過藥物濃度與抗藥抗體監測，協助評估反應不足原因、支持劑量調整與治療策略討論。
+              </p>
+              <button class="btn btn--ghost" data-modal="tdm-why">展開導讀</button>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">AFIAS 的 TDM Test Menu</h3>
+              <p class="card__desc">
+                直接從 AFIAS Test Menu 中篩出「Therapeutic Drug Monitoring」分類，現場快速對照產品編號/檢體別/時間。
+              </p>
+              <button class="btn btn--primary" id="btnJumpTdmItems">一鍵查看 TDM 項目</button>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">現場話術小抄（可自訂）</h3>
+              <p class="card__desc">
+                用 20 秒講清楚三件事：臨床痛點 → 監測能回答的問題 → AFIAS 可提供的檢測項目。
+              </p>
+              <button class="btn btn--ghost" data-modal="pitch">打開話術模板</button>
+            </article>
+          </div>
+
+          <div class="callout">
+            <div class="callout__badge">TIP</div>
+            <div class="callout__text">
+              你可以把「TDM 產品/臨床應用」改成你們展場主推情境（例如 IBD、風濕、自體免疫、生物製劑 switching），
+              我已把結構留好，改文字即可上線。
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal is-hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="document">
+        <div class="modal__head">
+          <h3 class="modal__title" id="modalTitle">標題</h3>
+          <button class="modal__close" aria-label="關閉" data-close="1">✕</button>
+        </div>
+        <div class="modal__body" id="modalBody"></div>
+        <div class="modal__foot">
+          <button class="btn btn--primary" data-close="1">關閉</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
+<!-- JavaScript -->
+<script>
+  // ========= Utilities =========
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  function showToast(msg){
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("is-on");
+    window.clearTimeout(showToast._tm);
+    showToast._tm = window.setTimeout(() => t.classList.remove("is-on"), 2200);
+  }
+
+  function showAlert(msg){
+    $("#alertText").textContent = msg;
+    $("#alertBar").classList.remove("is-hidden");
+  }
+  function hideAlert(){
+    $("#alertBar").classList.add("is-hidden");
+  }
+
+  function openModal(title, html){
+    $("#modalTitle").textContent = title;
+    $("#modalBody").innerHTML = html;
+    $("#modal").classList.remove("is-hidden");
+  }
+
+  function closeModal(){
+    $("#modal").classList.add("is-hidden");
+    $("#modalBody").innerHTML = "";
+  }
+
+const AFIAS_MODELS = {
+  "AFIAS 1": {
+    title: "AFIAS-1｜Compact All-in-One Analyzer",
+    body: `
+      <ul>
+        <li><b>定位：</b>小型單點檢測、門診/空間有限單位</li>
+        <li><b>測試流程：</b>All-in-One Cartridge，免移液</li>
+        <li><b>採檢：</b>全血 / 血清 / 血漿 / 指尖血（C-tip）</li>
+        <li><b>測試時間：</b>約 3–15 分鐘（依項目）</li>
+        <li><b>介面：</b>5 吋觸控螢幕、內建熱感印表</li>
+        <li><b>連線：</b>USB / Ethernet / LIS</li>
+        <li><b>尺寸：</b>180.6 × 320.6 × 206.4 mm</li>
+        <li><b>重量：</b>4.0 kg</li>
+      </ul>
+    `
+  },
+
+  "AFIAS 3": {
+    title: "AFIAS-3｜Multi-Testing Analyzer",
+    body: `
+      <ul>
+        <li><b>定位：</b>小型實驗室、多項目並行</li>
+        <li><b>同時測試：</b>最多 3 個 tests</li>
+        <li><b>流程特色：</b>額外 tip station，加快 TAT</li>
+        <li><b>介面：</b>7 吋觸控螢幕</li>
+        <li><b>連線：</b>USB / Ethernet / RS-232 / LIS</li>
+        <li><b>尺寸：</b>276 × 365 × 313 mm</li>
+        <li><b>重量：</b>9.3 kg</li>
+      </ul>
+    `
+  },
+
+  "AFIAS 6": {
+    title: "AFIAS-6｜Versatile Desktop Analyzer",
+    body: `
+      <ul>
+        <li><b>定位：</b>中等檢測量、多科別整合</li>
+        <li><b>同時測試：</b>最多 6 種不同 tests</li>
+        <li><b>流程：</b>Sample-to-Answer，全自動化</li>
+        <li><b>介面：</b>7 吋觸控螢幕</li>
+        <li><b>連線：</b>USB / Ethernet / RS-232 / LIS</li>
+        <li><b>尺寸：</b>420 × 336 × 293 mm</li>
+        <li><b>重量：</b>15.1 kg</li>
+      </ul>
+    `
+  },
+
+  "AFIAS 10": {
+    title: "AFIAS-10｜High-Throughput Analyzer",
+    body: `
+      <ul>
+        <li><b>定位：</b>高檢測量、急診/住院單位</li>
+        <li><b>同時測試：</b>最多 10 種 tests</li>
+        <li><b>流程亮點：</b>血管直接上機（Sample-to-Answer）</li>
+        <li><b>急件處理：</b>Emergency test first</li>
+        <li><b>連線：</b>雙向 LIS / HIS</li>
+        <li><b>介面：</b>10.1 吋觸控螢幕</li>
+        <li><b>尺寸：</b>426 × 443 × 395 mm</li>
+        <li><b>重量：</b>20 kg</li>
+      </ul>
+    `
+  }
+};
+
+  // ========= Data (Test Menu) =========
+  // 依附件「AFIAS 產品細項 C-tip標示」整理
+  const TEST_MENU = [
+    // Cardiac
+    {cat:"Cardiac", item:"hsCRP", code:"SMFP-78", sample:"W/S/P/C", time:"3 min"},
+    {cat:"Cardiac", item:"D-Dimer Neo", code:"SMFP-129", sample:"W/P", time:"12 min"},
+    {cat:"Cardiac", item:"Tn-I Plus", code:"SMFP-35", sample:"W/S/P", time:"12 min"},
+    {cat:"Cardiac", item:"CK-MB Neo", code:"SMFP-128", sample:"W/S/P", time:"12 min"},
+    {cat:"Cardiac", item:"Myoglobin Neo", code:"SMFP-127", sample:"W/S/P", time:"12 min"},
+    {cat:"Cardiac", item:"Cardiac Triple", code:"SMFP-59", sample:"W/S/P", time:"12 min"},
+    {cat:"Cardiac", item:"Troponin T", code:"SMFP-95", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Cardiac", item:"BNP", code:"SMFP-83", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Cardiac", item:"NT-proBNP", code:"SMFP-36", sample:"W/S/P", time:"12 min"},
+    {cat:"Cardiac", item:"ST2", code:"SMFP-70", sample:"W/S/P", time:"12 min"},
+
+    // Hormone
+    {cat:"Hormone", item:"TSH Plus", code:"SMFP-38", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Hormone", item:"T3", code:"SMFP-18", sample:"S/P", time:"10 min"},
+    {cat:"Hormone", item:"T4", code:"SMFP-19", sample:"S/P", time:"10 min"},
+    {cat:"Hormone", item:"Free T4", code:"SMFP-145", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Hormone", item:"FSH", code:"SMFP-5", sample:"W/S/P", time:"12 min"},
+    {cat:"Hormone", item:"β-HCG Plus", code:"SMFP-52", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Hormone", item:"LH", code:"SMFP-6", sample:"W/S/P", time:"12 min"},
+    {cat:"Hormone", item:"Prolactin", code:"SMFP-8", sample:"W/S/P", time:"10 min"},
+    {cat:"Hormone", item:"Progesterone", code:"SMFP-94", sample:"S/P", time:"15 min"},
+    {cat:"Hormone", item:"Testosterone", code:"SMFP-29", sample:"S/P", time:"15 min"},
+    {cat:"Hormone", item:"Cortisol", code:"SMFP-22", sample:"W/S/P", time:"10 min"},
+    {cat:"Hormone", item:"AMH", code:"SMFP-62", sample:"S/P", time:"12 min"},
+    {cat:"Hormone", item:"Estradiol", code:"SMFP-184", sample:"W/S/P", time:"20 min"},
+    {cat:"Hormone", item:"PTH", code:"SMFP-161", sample:"W/S/P", time:"17 min"},
+
+    // Diabetes
+    {cat:"Diabetes", item:"HbA1c Neo", code:"SMFP-109", sample:"W/C", time:"10 min"},
+    {cat:"Diabetes", item:"Microalbumin", code:"SMFP-30", sample:"Urine", time:"12 min"},
+    {cat:"Diabetes", item:"Insulin", code:"SMFP-174", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Diabetes", item:"HbA1c", code:"SMFP-28", sample:"W/C", time:"10 min"},
+
+    // Infection
+    {cat:"Infection", item:"CRP**", code:"SMFP-2", sample:"W/S/P/C", time:"3 min"},
+    {cat:"Infection", item:"MxA/CRP", code:"SMFP-102", sample:"W/C", time:"12 min"},
+    {cat:"Infection", item:"PCT**", code:"SMFP-7", sample:"W/S/P", time:"12 min"},
+    {cat:"Infection", item:"PCT Plus**", code:"SMFP-32", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Infection", item:"IL-6", code:"SMFP-74", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Infection", item:"Carba 5***", code:"SMFP-182", sample:"Colony test", time:"15 min"},
+    {cat:"Infection", item:"Flu A+B", code:"SMFP-68", sample:"Swab", time:"10 min"},
+    {cat:"Infection", item:"RSV", code:"SMFP-126", sample:"Swab", time:"10 min"},
+    {cat:"Infection", item:"COVID-19 Ab", code:"SMFP-72", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Infection", item:"COVID-19 Ag", code:"SMFP-71", sample:"Swab", time:"12 min"},
+    {cat:"Infection", item:"COVID-19/Flu Ag Combo", code:"SMFP-77", sample:"Swab", time:"20 min"},
+    {cat:"Infection", item:"COVID-19/Flu A+B/RSV Ag Combo", code:"SMFP-113", sample:"Swab", time:"20 min"},
+    {cat:"Infection", item:"Strep A", code:"SMFP-177", sample:"Throat swab", time:"10 min"},
+    {cat:"Infection", item:"HBsAg", code:"SMFP-15", sample:"W/S/P", time:"12 min"},
+    {cat:"Infection", item:"Anti-HBs", code:"SMFP-16", sample:"W/S/P", time:"15 min"},
+    {cat:"Infection", item:"Anti-HCV**", code:"SMFP-17", sample:"W/S/P", time:"12 min"},
+    {cat:"Infection", item:"Dengue NS1 Ag", code:"SMFP-44", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Infection", item:"Dengue IgG/IgM", code:"SMFP-41", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Infection", item:"NORO", code:"SMFP-26", sample:"Feces", time:"12 min"},
+    {cat:"Infection", item:"ROTA", code:"SMFP-25", sample:"Feces", time:"12 min"},
+    {cat:"Infection", item:"Rota/Adeno", code:"SMFP-43", sample:"Feces", time:"12 min"},
+    {cat:"Infection", item:"IGRA-TB", code:"SMFP-99", sample:"P", time:"15 min"},
+    {cat:"Infection", item:"HIV 1/2 Ab", code:"SMFP-172", sample:"W/S/P/C", time:"10 min"},
+
+    // Autoimmune
+    {cat:"Autoimmune", item:"Anti-CCP Plus", code:"SMFP-67", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Autoimmune", item:"Total IgE", code:"SMFP-84", sample:"W/S/P", time:"12 min"},
+
+    // Organ Function
+    {cat:"Organ Function", item:"Sphingotest penKid***", code:"SMFP-156", sample:"W/P", time:"15 min"},
+    {cat:"Organ Function", item:"KL-6", code:"SMFP-155", sample:"S/P", time:"10 min"},
+
+    // Cancer
+    {cat:"Cancer", item:"PSA Neo", code:"SMFP-130", sample:"W/S/P/C", time:"15 min"},
+    {cat:"Cancer", item:"Free PSA", code:"SMFP-170", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Cancer", item:"AFP", code:"SMFP-27", sample:"W/S/P", time:"15 min"},
+    {cat:"Cancer", item:"CEA", code:"SMFP-21", sample:"W/S/P", time:"15 min"},
+    {cat:"Cancer", item:"Cyfra21-1", code:"SMFP-135", sample:"S/P", time:"12 min"},
+    {cat:"Cancer", item:"CA19-9", code:"SMFP-134", sample:"S/P", time:"12 min"},
+    {cat:"Cancer", item:"CA125", code:"SMFP-132", sample:"S/P", time:"12 min"},
+
+    // TDM
+    {cat:"Therapeutic Drug Monitoring", item:"Infliximab", code:"SMFP-75", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Adalimumab", code:"SMFP-89", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Golimumab", code:"SMFP-91", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Vedolizumab", code:"SMFP-115", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Ustekinumab", code:"SMFP-114", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Etanercept", code:"SMFP-93", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Trastuzumab", code:"SMFP-105", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Total Anti-Infliximab", code:"SMFP-76", sample:"S/P", time:"22 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Infliximab", code:"SMFP-86", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Adalimumab", code:"SMFP-87", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Golimumab", code:"SMFP-90", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Vedolizumab", code:"SMFP-100", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Ustekinumab", code:"SMFP-101", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Etanercept", code:"SMFP-92", sample:"W/S/P/C", time:"10 min"},
+    {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Trastuzumab", code:"SMFP-96", sample:"W/S/P/C", time:"10 min"},
+
+    // Others
+    {cat:"Others", item:"Ferritin", code:"SMFP-23", sample:"S/P", time:"10 min"},
+    {cat:"Others", item:"Vitamin D Neo", code:"SMFP-108", sample:"W/S/P/C", time:"12 min"},
+    {cat:"Others", item:"H. pylori SA", code:"SMFP-178", sample:"Feces", time:"12 min"},
+    {cat:"Others", item:"Calprotectin", code:"SMFP-149", sample:"Feces", time:"10 min"},
+  ];
+
+  // ========= Tabs =========
+  function setTab(name){
+    $$(".nav__item").forEach(b => b.classList.toggle("is-active", b.dataset.tab === name));
+    $$(".tab").forEach(p => p.classList.toggle("is-active", p.dataset.tabpanel === name));
+    // 手機選單收起
+    $("#navMenu").classList.remove("is-open");
+    $("#navToggle").setAttribute("aria-expanded", "false");
+    // 小提示
+    if(name === "menu") showToast("可搜尋/篩選 Test Menu");
+  }
+
+  // ========= Render Test Menu =========
+  function initCategories(){
+    const cats = Array.from(new Set(TEST_MENU.map(x => x.cat)));
+    const sel = $("#cat");
+    cats.forEach(c => {
+      const o = document.createElement("option");
+      o.value = c;
+      o.textContent = c;
+      sel.appendChild(o);
+    });
+  }
+
+  function includesCtip(sample){
+    return String(sample || "").includes("C");
+  }
+
+  function filterData(){
+    const q = ($("#q").value || "").trim().toLowerCase();
+    const cat = $("#cat").value;
+    const onlyC = $("#onlyCtip").checked;
+
+    let data = TEST_MENU.slice();
+
+    if(cat !== "all"){
+      data = data.filter(x => x.cat === cat);
+    }
+    if(onlyC){
+      data = data.filter(x => includesCtip(x.sample));
+    }
+    if(q){
+      data = data.filter(x => {
+        const hay = `${x.cat} ${x.item} ${x.code} ${x.sample} ${x.time}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+    return data;
+  }
+
+  function renderTable(rows){
+    const tbody = $("#tbody");
+    tbody.innerHTML = "";
+
+    if(!Array.isArray(rows)){
+      showAlert("資料格式不正確：Test Menu 不是陣列，請檢查 TEST_MENU。");
+      return;
+    }
+
+    if(rows.length === 0){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td colspan="5">
+          <div style="padding:10px 0; font-weight:900;">
+            查無符合條件的項目。建議清除篩選或改用其他關鍵字。
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      $("#resultMeta").textContent = "0 筆結果";
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    rows.forEach(x => {
+      const tr = document.createElement("tr");
+      const ctip = includesCtip(x.sample) ? `<span class="chip">C-tip</span>` : `<span class="muted">—</span>`;
+      tr.innerHTML = `
+        <td>${x.cat}</td>
+        <td>${x.item} ${ctip}</td>
+        <td>${x.code}</td>
+        <td>${x.sample}</td>
+        <td>${x.time}</td>
+      `;
+      frag.appendChild(tr);
+    });
+
+    tbody.appendChild(frag);
+    $("#resultMeta").textContent = `共 ${rows.length} 筆結果`;
+  }
+
+  function refreshMenu(){
+    // 缺漏處理：若 TEST_MENU 被清空或遺失
+    if(!Array.isArray(TEST_MENU) || TEST_MENU.length === 0){
+      showAlert("缺少 Test Menu 資料（TEST_MENU）。請確認已貼上附件表單內容。");
+      renderTable([]);
+      return;
+    }
+    hideAlert();
+    renderTable(filterData());
+  }
+
+  // ========= Interactions =========
+  function bind(){
+    // Tabs
+    $$(".nav__item").forEach(btn => {
+      btn.addEventListener("click", () => setTab(btn.dataset.tab));
+    });
+
+    // Mobile nav
+    $("#navToggle").addEventListener("click", () => {
+      const menu = $("#navMenu");
+      const isOpen = menu.classList.toggle("is-open");
+      $("#navToggle").setAttribute("aria-expanded", String(isOpen));
+    });
+
+    // Quick menu
+    $("#btnQuickMenu").addEventListener("click", () => setTab("menu"));
+
+    // Open poster (A4)
+    $("#btnOpenPoster").addEventListener("click", () => {
+      openModal("AFIAS A4 主視覺", `
+        <div class="poster">
+          <img src="afias_a4_cn.png" alt="AFIAS A4 中文單面主視覺（請放在同資料夾）" />
+        </div>
+        <div style="margin-top:12px; opacity:.9">
+          若看不到圖片，請確認 <b>afias_a4_cn.png</b> 與本 HTML 在同一資料夾。
+        </div>
+      `);
+    });
+
+    // Feature buttons
+    $$(".feature__btn").forEach(b => {
+      b.addEventListener("click", () => {
+        const key = b.dataset.more;
+        if(key === "menu") return setTab("menu");
+        if(key === "qc"){
+          return openModal("高品質檢驗報告｜重點整理", `
+            <ul>
+              <li>高靈敏螢光分析技術，提升報告品質</li>
+              <li>內建品管系統監控</li>
+              <li>5~15分鐘完成報告分析</li>
+            </ul>
+            <div style="margin-top:10px;">
+              你也可以把這段改成「你們現場主推的 QC/External control/校正」內容。
+            </div>
+          `);
+        }
+        if(key === "workflow"){
+          return openModal("簡易且便利的操作｜現場講解框架", `
+            <ol>
+              <li><b>All-in-One Cartridge</b>：隨開即用、易保存</li>
+              <li><b>獨家 C-tip™</b>：指尖血採集更便利</li>
+              <li><b>出報告</b>：5~15 分鐘快速完成</li>
+            </ol>
+          `);
+        }
+      });
+    });
+
+    // Model cards
+$$(".modelcard").forEach(c => {
+  c.addEventListener("click", () => {
+    const model = c.dataset.model;
+
+    if (!AFIAS_MODELS[model]) {
+      openModal(model, "<p>尚未定義此機型的詳細規格。</p>");
+      return;
+    }
+
+    openModal(
+      AFIAS_MODELS[model].title,
+      AFIAS_MODELS[model].body
+    );
+  });
+});
+
+
+    // Copy phone
+    $$(".pill").forEach(p => {
+      p.addEventListener("click", async () => {
+        const v = p.dataset.copy || "";
+        try{
+          await navigator.clipboard.writeText(v);
+          showToast(`已複製：${v}`);
+        }catch(e){
+          showAlert("無法使用剪貼簿（可能被瀏覽器阻擋）。你仍可手動選取電話。");
+        }
+      });
+    });
+
+    // Menu controls
+    ["q","cat","onlyCtip"].forEach(id => {
+      $("#"+id).addEventListener("input", refreshMenu);
+      $("#"+id).addEventListener("change", refreshMenu);
+    });
+    $("#btnReset").addEventListener("click", () => {
+      $("#q").value = "";
+      $("#cat").value = "all";
+      $("#onlyCtip").checked = false;
+      refreshMenu();
+      showToast("已重設篩選條件");
+    });
+
+    // TDM jump
+    $("#btnJumpTdmItems").addEventListener("click", () => {
+      setTab("menu");
+      $("#cat").value = "Therapeutic Drug Monitoring";
+      $("#q").value = "";
+      $("#onlyCtip").checked = false;
+      refreshMenu();
+      showToast("已切到 TDM 分類");
+    });
+
+    // Modal close
+    $("#modal").addEventListener("click", (e) => {
+      if(e.target && e.target.dataset && e.target.dataset.close) closeModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closeModal();
+    });
+
+    // Alert close
+    $("#alertClose").addEventListener("click", hideAlert);
+
+    // TDM modals
+    $$("[data-modal='tdm-why']").forEach(b => {
+      b.addEventListener("click", () => {
+        openModal("為什麼要做 TDM？（導讀版）", `
+          <ul>
+            <li>用監測數據支持「是否需要調整劑量／間隔／換藥」的臨床討論</li>
+            <li>在反應不足時，協助判讀：藥物濃度不足？或抗藥抗體影響？</li>
+            <li>搭配 AFIAS 的 TDM 項目，可做現場快速對照（見 Test Menu 的 TDM 分類）</li>
+          </ul>
+          <div style="margin-top:10px; opacity:.9">
+            ※ 此處為展場導讀文字；若你要加入特定疾病別（IBD/風濕等）與指引句，告訴我你想用哪一套說法。
+          </div>
+        `);
+      });
+    });
+
+    $$("[data-modal='pitch']").forEach(b => {
+      b.addEventListener("click", () => {
+        openModal("現場話術模板（20 秒）", `
+          <ol>
+            <li><b>痛點</b>：生物製劑治療反應不佳或需要維持穩定療效時，臨床常需要客觀數據支持決策。</li>
+            <li><b>能回答的問題</b>：目前藥物濃度是否在合理範圍？是否存在抗藥抗體影響？</li>
+            <li><b>AFIAS 能提供</b>：對應的 TDM 項目與快速周轉時間（可直接在 Test Menu 中查詢產品編號/檢體別）。</li>
+          </ol>
+          <div style="margin-top:10px; padding:12px; border-radius:14px; background: rgba(10,107,136,.08); border: 1px solid rgba(10,107,136,.18)">
+            你可以把第 1 句改成：你們展場主推情境（例如 IBD：loss of response / de-escalation）。
+          </div>
+        `);
+      });
+    });
+  }
+
+  // ========= Boot =========
+  function boot(){
+    try{
+      initCategories();
+      refreshMenu();
+      bind();
+
+      // 預檢：主圖檔名提示（不擋流程）
+      // 若圖片缺漏，會由 onerror 觸發顯示提示
+      const heroImg = document.querySelector(".hero__bgimg");
+      heroImg.addEventListener("error", () => {
+        showAlert("找不到主視覺圖片 afias_a4_cn.png。請把圖片與 HTML 放在同資料夾，或改成你的檔名。");
+      });
+    }catch(err){
+      console.error(err);
+      showAlert("初始化失敗：請檢查是否有漏貼 HTML/CSS/JS 任一段。");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", boot);
+</script>
+
+  </body>
+</html>
